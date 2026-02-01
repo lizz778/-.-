@@ -1,0 +1,1902 @@
+<!DOCTYPE html>
+<html lang="ka">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>sachivrebi.ge - საჩივრების პლატფორმა</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-dark: #0a0a0a;
+            --secondary-dark: #111111;
+            --accent-green: #10b981;
+            --accent-green-light: #34d399;
+            --text-primary: #f9fafb;
+            --text-secondary: #d1d5db;
+        }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--primary-dark);
+            color: var(--text-primary);
+        }
+        
+        .dark-card {
+            background-color: var(--secondary-dark);
+            border: 1px solid #1f2937;
+            border-radius: 0.75rem;
+        }
+        
+        .accent-border {
+            border-color: var(--accent-green);
+        }
+        
+        .gradient-text {
+            background: linear-gradient(90deg, var(--accent-green), var(--accent-green-light));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(90deg, var(--accent-green), var(--accent-green-light));
+            color: white;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(16, 185, 129, 0.3);
+        }
+        
+        .btn-secondary {
+            background-color: transparent;
+            border: 1px solid var(--accent-green);
+            color: var(--accent-green);
+            transition: all 0.3s ease;
+        }
+        
+        .btn-secondary:hover {
+            background-color: rgba(16, 185, 129, 0.1);
+        }
+        
+        .anonymous-icon {
+            color: #9ca3af;
+        }
+        
+        .public-icon {
+            color: var(--accent-green);
+        }
+        
+        .reaction-active {
+            color: #ef4444;
+        }
+        
+        .comment-active {
+            color: #3b82f6;
+        }
+        
+        .language-selector {
+            background-color: var(--secondary-dark);
+            border: 1px solid #374151;
+            color: var(--text-primary);
+        }
+        
+        .online-indicator {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background-color: var(--accent-green);
+            display: inline-block;
+            margin-right: 5px;
+        }
+        
+        /* Mobile menu animation */
+        .mobile-menu {
+            transform: translateX(100%);
+            transition: transform 0.3s ease-in-out;
+        }
+        
+        .mobile-menu.open {
+            transform: translateX(0);
+        }
+        
+        /* Chat animation */
+        .chat-message {
+            animation: fadeIn 0.3s ease-in-out;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        /* Post animation */
+        .post-card {
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        
+        .post-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+        }
+        
+        /* Scrollbar styling */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: #1f2937;
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: #4b5563;
+            border-radius: 4px;
+        }
+        
+        ::-webkit-scrollbar-thumb:hover {
+            background: #6b7280;
+        }
+        
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .post-card {
+                margin-bottom: 1rem;
+            }
+            
+            .mobile-hidden {
+                display: none;
+            }
+            
+            .chat-container {
+                height: 300px !important;
+            }
+        }
+        
+        @media (max-width: 640px) {
+            .post-actions {
+                flex-wrap: wrap;
+            }
+            
+            .post-action-btn {
+                margin-bottom: 0.5rem;
+            }
+            
+            .chat-container {
+                height: 250px !important;
+            }
+        }
+    </style>
+</head>
+<body class="bg-gray-900 text-gray-100">
+    <!-- Navigation -->
+    <nav class="sticky top-0 z-50 bg-gray-900 border-b border-gray-800">
+        <div class="container mx-auto px-4 py-3">
+            <div class="flex justify-between items-center">
+                <!-- Logo -->
+                <div class="flex items-center">
+                    <div class="w-8 h-8 rounded-full bg-gradient-to-r from-green-500 to-emerald-400 mr-2"></div>
+                    <h1 class="text-xl font-bold gradient-text">sachivrebi.ge</h1>
+                </div>
+                
+                <!-- Desktop Navigation -->
+                <div class="hidden md:flex items-center space-x-6">
+                    <a href="#" class="nav-link hover:text-green-400 transition" data-section="home">მთავარი</a>
+                    <a href="#" class="nav-link hover:text-green-400 transition" data-section="forum">ფორუმი</a>
+                    <a href="#" class="nav-link hover:text-green-400 transition" data-section="chat">ჩატი</a>
+                    <a href="#" class="nav-link hover:text-green-400 transition" data-section="about">ჩვენ შესახებ</a>
+                    
+                    <!-- Language Selector -->
+                    <div class="relative">
+                        <select id="language-select" class="language-selector py-1 px-3 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-green-500">
+                            <option value="ka">🇬🇪 ქართული</option>
+                            <option value="en">🇬🇧 English</option>
+                        </select>
+                    </div>
+                    
+                    <!-- Login/Register or Profile -->
+                    <div id="auth-buttons" class="flex items-center space-x-3">
+                        <button id="login-btn" class="btn-secondary py-2 px-4 rounded-lg text-sm font-medium">შესვლა</button>
+                        <button id="register-btn" class="btn-primary py-2 px-4 rounded-lg text-sm font-medium">რეგისტრაცია</button>
+                    </div>
+                    
+                    <div id="user-profile" class="hidden items-center space-x-3">
+                        <div class="flex items-center">
+                            <div class="w-8 h-8 rounded-full bg-gradient-to-r from-green-500 to-emerald-400 flex items-center justify-center text-white font-bold mr-2">U</div>
+                            <span id="username-display" class="font-medium">მომხმარებელი123</span>
+                        </div>
+                        <button id="logout-btn" class="btn-secondary py-2 px-4 rounded-lg text-sm font-medium">გამოსვლა</button>
+                    </div>
+                </div>
+                
+                <!-- Mobile Menu Button -->
+                <button id="mobile-menu-btn" class="md:hidden text-gray-300 hover:text-green-400">
+                    <i class="fas fa-bars text-xl"></i>
+                </button>
+            </div>
+        </div>
+        
+        <!-- Mobile Menu -->
+        <div id="mobile-menu" class="mobile-menu fixed inset-y-0 right-0 w-64 bg-gray-900 border-l border-gray-800 p-6 md:hidden">
+            <div class="flex justify-between items-center mb-8">
+                <div class="flex items-center">
+                    <div class="w-8 h-8 rounded-full bg-gradient-to-r from-green-500 to-emerald-400 mr-2"></div>
+                    <h2 class="text-xl font-bold gradient-text">
+                        sachivrebi.ge
+                    </h2>
+                </div>
+                <button id="mobile-menu-close" class="text-gray-300 hover:text-green-400">
+                    <i class="fas fa-times text-xl"></i>
+                </button>
+            </div>
+            
+            <div class="space-y-4 mb-8">
+                <a href="#" class="block nav-link hover:text-green-400 transition py-2" data-section="home">მთავარი</a>
+                <a href="#" class="block nav-link hover:text-green-400 transition py-2" data-section="forum">ფორუმი</a>
+                <a href="#" class="block nav-link hover:text-green-400 transition py-2" data-section="chat">ჩატი</a>
+                <a href="#" class="block nav-link hover:text-green-400 transition py-2" data-section="about">ჩვენ შესახებ</a>
+            </div>
+            
+            <div class="mb-6">
+                <label class="block text-sm font-medium mb-2">ენა</label>
+                <select id="language-select-mobile" class="language-selector w-full py-2 px-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500">
+                    <option value="ka">🇬🇪 ქართული</option>
+                    <option value="en">🇬🇧 English</option>
+                </select>
+            </div>
+            
+            <div id="auth-buttons-mobile" class="space-y-3">
+                <button id="login-btn-mobile" class="btn-secondary w-full py-2 px-4 rounded-lg font-medium">შესვლა</button>
+                <button id="register-btn-mobile" class="btn-primary w-full py-2 px-4 rounded-lg font-medium">რეგისტრაცია</button>
+            </div>
+            
+            <div id="user-profile-mobile" class="hidden space-y-3">
+                <div class="flex items-center p-3 dark-card rounded-lg">
+                    <div class="w-10 h-10 rounded-full bg-gradient-to-r from-green-500 to-emerald-400 flex items-center justify-center text-white font-bold mr-3">U</div>
+                    <div>
+                        <div id="username-display-mobile" class="font-medium">მომხმარებელი123</div>
+                        <div class="text-xs text-gray-400">აქტიური</div>
+                    </div>
+                </div>
+                <button id="logout-btn-mobile" class="btn-secondary w-full py-2 px-4 rounded-lg font-medium">გამოსვლა</button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="container mx-auto px-4 py-8">
+        <!-- Welcome Section -->
+        <section id="home" class="section">
+            <div class="text-center mb-10">
+                <h2 class="text-3xl md:text-4xl font-bold mb-4 gradient-text">გაგვიზიარე შენი გამოცდილება</h2>
+                <p class="text-gray-300 max-w-2xl mx-auto">დაცული ადგილი, სადაც შეგიძლია გააზიარო შენი წუხილი, დაწერო საჩივარი როგორც საჯაროდ ისე ანონიმურად.</p>
+                
+                <!-- Online Users Count -->
+                <div class="mt-6 inline-flex items-center bg-gray-800 px-4 py-2 rounded-lg">
+                    <span class="online-indicator"></span>
+                    <span id="online-count" class="font-medium">247</span>
+                    <span class="ml-2 text-gray-400">მომხმარებელია ონლაინ</span>
+                </div>
+            </div>
+            
+            <!-- Post Creation Card -->
+            <div class="dark-card p-6 mb-10 accent-border">
+                <h3 class="text-xl font-bold mb-4 gradient-text">ახალი პოსტის შექმნა</h3>
+                
+                <!-- Post Type Selector -->
+                <div class="flex mb-6">
+                    <div id="post-type-anonymous" class="flex-1 text-center py-3 border-b-2 border-green-500 cursor-pointer">
+                        <i class="fas fa-user-secret text-xl mb-2 anonymous-icon"></i>
+                        <div class="font-medium">ანონიმურად გამოქვეყნება</div>
+                        <div class="text-xs text-gray-400 mt-1">შენი იდენტიფიკატორი დამალული იქნება</div>
+                    </div>
+                    <div id="post-type-public" class="flex-1 text-center py-3 border-b border-gray-700 cursor-pointer">
+                        <i class="fas fa-user text-xl mb-2 public-icon"></i>
+                        <div class="font-medium">საჯაროდ გამოქვეყნება</div>
+                        <div class="text-xs text-gray-400 mt-1">შენი ისტორია საჯაროდ გამოჩნდება</div>
+                    </div>
+                </div>
+                
+                <!-- Post Form -->
+                <div id="post-form">
+                    <div class="mb-4">
+                        <input type="text" id="post-title" placeholder="პოსტის სათაური..." class="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-green-500">
+                    </div>
+                    
+                    <div class="mb-4">
+                        <textarea id="post-content" rows="4" placeholder="რას გაგვიზიარებთ?..." class="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-green-500 resize-none"></textarea>
+                        <div class="flex justify-between mt-2">
+                            <div class="text-sm text-gray-400">
+                                <span id="char-count">0</span>/1000 სიმბოლო
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="flex flex-wrap gap-4 mb-6">
+                        <div>
+                            <label class="block text-sm font-medium mb-2">კატეგორია</label>
+                            <select id="post-category" class="bg-gray-800 border border-gray-700 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-green-500">
+                                <option value="worry">😟 წუხილი</option>
+                                <option value="complaint">😤 საჩივარი</option>
+                                <option value="rant">😠 გაბრაზებული</option>
+                                <option value="question">🤔 კითხვა</option>
+                                <option value="other">📝 სხვა</option>
+                            </select>
+                        </div>
+                        
+                        <div id="post-tags" class="flex-1">
+                            <label class="block text-sm font-medium mb-2">ტეგები (სურვილისამებრ)</label>
+                            <input type="text" id="post-tags-input" placeholder="ტეგები გამოყავით მძიმეებით" class="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-green-500">
+                        </div>
+                    </div>
+                    
+                    <div class="flex justify-between items-center">
+                        <div class="text-sm text-gray-400">
+                            <i class="fas fa-lock mr-1"></i>
+                            <span id="post-type-indicator">თქვენ ანონიმურად აქვეყნებთ</span>
+                        </div>
+                        <button id="submit-post" class="btn-primary py-3 px-6 rounded-lg font-medium">დადასტურება ანონიმურად</button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Forum Preview -->
+            <div class="mb-10">
+                <div class="flex justify-between items-center mb-6">
+                    <h3 class="text-2xl font-bold gradient-text">უახლესი პოსტები</h3>
+                    <div class="flex space-x-2">
+                        <button id="filter-all" class="btn-secondary py-2 px-4 rounded-lg text-sm font-medium active">ყველა</button>
+                        <button class="btn-secondary py-2 px-4 rounded-lg text-sm font-medium" data-category="worry">წუხილი</button>
+                        <button class="btn-secondary py-2 px-4 rounded-lg text-sm font-medium" data-category="complaint">საჩივარი</button>
+                        <button class="btn-secondary py-2 px-4 rounded-lg text-sm font-medium" data-category="rant">გაბრაზებული</button>
+                    </div>
+                </div>
+                
+                <!-- Posts Grid -->
+                <div id="posts-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <!-- Posts will be dynamically added here -->
+                </div>
+            </div>
+        </section>
+
+        <!-- Forum Section -->
+        <section id="forum" class="section hidden">
+            <div class="flex justify-between items-center mb-8">
+                <h2 class="text-3xl font-bold gradient-text">საზოგადოების ფორუმი</h2>
+                <div class="flex items-center">
+                    <div class="mr-4">
+                        <span class="online-indicator"></span>
+                        <span id="forum-online-count" class="font-medium">247</span>
+                        <span class="ml-1 text-gray-400">აქტიური</span>
+                    </div>
+                    <button id="new-post-btn" class="btn-primary py-3 px-6 rounded-lg font-medium">
+                        <i class="fas fa-plus mr-2"></i>ახალი პოსტი
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Filter Options -->
+            <div class="dark-card p-4 mb-6">
+                <div class="flex flex-wrap gap-2">
+                    <button class="filter-btn btn-secondary py-2 px-4 rounded-lg text-sm font-medium active" data-filter="all">ყველა პოსტი</button>
+                    <button class="filter-btn btn-secondary py-2 px-4 rounded-lg text-sm font-medium" data-filter="worry">😟 წუხილი</button>
+                    <button class="filter-btn btn-secondary py-2 px-4 rounded-lg text-sm font-medium" data-filter="complaint">😤 საჩივარი</button>
+                    <button class="filter-btn btn-secondary py-2 px-4 rounded-lg text-sm font-medium" data-filter="rant">😠 გაბრაზებული</button>
+                    <button class="filter-btn btn-secondary py-2 px-4 rounded-lg text-sm font-medium" data-filter="question">🤔 კითხვები</button>
+                    <button class="filter-btn btn-secondary py-2 px-4 rounded-lg text-sm font-medium" data-filter="anonymous">🕵️ ანონიმური</button>
+                    <button class="filter-btn btn-secondary py-2 px-4 rounded-lg text-sm font-medium" data-filter="public">👤 საჯარო</button>
+                </div>
+            </div>
+            
+            <!-- Posts Container -->
+            <div id="forum-posts-container">
+                <!-- Forum posts will be dynamically added here -->
+            </div>
+        </section>
+
+        <!-- Chat Section -->
+        <section id="chat" class="section hidden">
+            <div class="dark-card p-6">
+                <div class="flex justify-between items-center mb-6">
+                    <div>
+                        <h2 class="text-3xl font-bold gradient-text">საზოგადოების ჩატი</h2>
+                        <p class="text-gray-300">შეუერთდი ჩათს, ყველა საუბარი საჯაროა.</p>
+                    </div>
+                    <div class="text-right">
+                        <div class="text-sm text-gray-400">პირდაპირი ეთერი</div>
+                        <div class="flex items-center">
+                            <span class="online-indicator"></span>
+                            <span id="chat-online-count" class="font-medium">78</span>
+                            <span class="ml-1">მომხმარებელი საუბრობს</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Chat Container -->
+                <div class="bg-gray-800 rounded-lg p-4 mb-6 chat-container" style="height: 400px; overflow-y: auto;">
+                    <div id="chat-messages">
+                        <!-- Chat messages will be dynamically added here -->
+                    </div>
+                </div>
+                
+                <!-- Chat Input -->
+                <div class="flex flex-col md:flex-row">
+                    <input type="text" id="chat-input" placeholder="მოგვწერეთ..." class="flex-1 bg-gray-800 border border-gray-700 rounded-lg md:rounded-l-lg md:rounded-r-none px-4 py-3 focus:outline-none focus:ring-2 focus:ring-green-500 mb-2 md:mb-0">
+                    <div class="relative mb-2 md:mb-0 md:ml-0">
+                        <select id="chat-identity" class="appearance-none bg-gray-800 border border-gray-700 md:border-r-0 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-green-500 w-full" style="width: 100%;">
+                            <option value="anonymous">🕵️ ანონიმური</option>
+                            <option value="public">👤 საჯარო (თუ შესული ხართ)</option>
+                        </select>
+                        <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-400">
+                            <i class="fas fa-chevron-down"></i>
+                        </div>
+                    </div>
+                    <button id="send-chat-btn" class="btn-primary py-3 px-6 rounded-lg md:rounded-r-lg md:rounded-l-none font-medium">
+                        <i class="fas fa-paper-plane mr-2"></i><span class="mobile-hidden">გაგზავნა</span>
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- About Section -->
+        <section id="about" class="section hidden">
+            <div class="max-w-4xl mx-auto">
+                <h2 class="text-3xl font-bold gradient-text mb-8 text-center">sachivrebi.ge - ჩვენ შესახებ</h2>
+                
+                <div class="dark-card p-8">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
+                        <div>
+                            <h3 class="text-xl font-bold mb-4 gradient-text">ჩვენი მიზანი</h3>
+                            <p class="text-gray-300 mb-4">sachivrebi.ge შექმნილია ხალხისთვის, რომლებსაც სურთ თავიანთი წუხილი, საჩივრები და გამოცდილებები გაუზიარონ სხვებს. აქ თქვენ სრულიად დაცულნი იქნებით და შეგეძლებათ გამოხატოთ საკუთარი თავი როგორც ანონიმურად, ასევე საჯაროდ.</p>
+                            <p class="text-gray-300">ჩვენ მივიჩნევთ, რომ ყველა იმსახურებს იყოს მოსმენილი. ისევე როგორც ანონიმურად, ასევე საჯაროდ.</p>
+                        </div>
+                        
+                        <div>
+                            <h3 class="text-xl font-bold mb-4 gradient-text">პირადი მონაცემების დაცვა</h3>
+                            <ul class="space-y-3 text-gray-300">
+                                <li class="flex items-start">
+                                    <i class="fas fa-check text-green-500 mr-2 mt-1"></i>
+                                    <span>ანონიმური პოსტებისთვის პირადი მონაცემები არ აგროვება</span>
+                                </li>
+                                <li class="flex items-start">
+                                    <i class="fas fa-check text-green-500 mr-2 mt-1"></i>
+                                    <span>საკუთარი შეტყობინებების დაშიფვრა</span>
+                                </li>
+                                <li class="flex items-start">
+                                    <i class="fas fa-check text-green-500 mr-2 mt-1"></i>
+                                    <span>თქვენი იდენტიფიკაცია ყოველთვის დაცულია</span>
+                                </li>
+                                <li class="flex items-start">
+                                    <i class="fas fa-check text-green-500 mr-2 mt-1"></i>
+                                    <span>ჩვენ არ ვყიდით და არ ვაზიანებთ თქვენს მონაცემებს</span>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                    
+                    <div class="border-t border-gray-700 pt-8">
+                        <h3 class="text-xl font-bold mb-4 gradient-text">საზოგადოების გამოყენების წესები</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                            <div class="dark-card p-4">
+                                <div class="text-green-500 text-2xl mb-3">🛡️</div>
+                                <h4 class="font-bold mb-2">იყავით პატივისცემით</h4>
+                                <p class="text-sm text-gray-300">პატივი ეცით სხვის აზრს დაუთანხმებლობის შემთხვევაშიც.</p>
+                            </div>
+                            
+                            <div class="dark-card p-4">
+                                <div class="text-green-500 text-2xl mb-3">🔒</div>
+                                <h4 class="font-bold mb-2">პირადი მონაცემების დაცვა</h4>
+                                <p class="text-sm text-gray-300">არასდროს გააზიაროთ თქვენი პირადი ინფორმაცია.</p>
+                            </div>
+                            
+                            <div class="dark-card p-4">
+                                <div class="text-green-500 text-2xl mb-3">🤝</div>
+                                <h4 class="font-bold mb-2">სხვების მხარდაჭერა</h4>
+                                <p class="text-sm text-gray-300">გთავაზობთ სხვების მხარდაჭერას და მოხალისეობას.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Login Modal -->
+    <div id="login-modal" class="fixed inset-0 bg-black bg-opacity-70 z-50 flex items-center justify-center hidden">
+        <div class="dark-card p-8 w-full max-w-md mx-4">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-2xl font-bold gradient-text">შესვლა თქვენს ანგარიშზე</h3>
+                <button id="close-login-modal" class="text-gray-400 hover:text-white">
+                    <i class="fas fa-times text-xl"></i>
+                </button>
+            </div>
+            
+            <div id="login-form">
+                <div class="mb-4">
+                    <label class="block text-sm font-medium mb-2">მომხმარებლის სახელი ან ელ.ფოსტა</label>
+                    <input type="text" id="login-username" class="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-green-500">
+                </div>
+                
+                <div class="mb-6">
+                    <label class="block text-sm font-medium mb-2">პაროლი</label>
+                    <input type="password" id="login-password" class="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-green-500">
+                </div>
+                
+                <button id="submit-login" class="btn-primary w-full py-3 rounded-lg font-medium mb-4">შესვლა</button>
+                
+                <div class="text-center">
+                    <button id="switch-to-register" class="text-green-400 hover:text-green-300 text-sm">არ გაქვთ ანგარიში? დარეგისტრირდით</button>
+                </div>
+            </div>
+            
+            <div id="register-form" class="hidden">
+                <div class="mb-4">
+                    <label class="block text-sm font-medium mb-2">მომხმარებლის სახელი</label>
+                    <input type="text" id="register-username" class="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-green-500">
+                </div>
+                
+                <div class="mb-4">
+                    <label class="block text-sm font-medium mb-2">ელ.ფოსტა</label>
+                    <input type="email" id="register-email" class="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-green-500">
+                </div>
+                
+                <div class="mb-4">
+                    <label class="block text-sm font-medium mb-2">პაროლი</label>
+                    <input type="password" id="register-password" class="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-green-500">
+                </div>
+                
+                <div class="mb-6">
+                    <label class="block text-sm font-medium mb-2">პაროლის დამოწმება</label>
+                    <input type="password" id="register-confirm-password" class="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-green-500">
+                </div>
+                
+                <button id="submit-register" class="btn-primary w-full py-3 rounded-lg font-medium mb-4">ანგარიშის შექმნა</button>
+                
+                <div class="text-center">
+                    <button id="switch-to-login" class="text-green-400 hover:text-green-300 text-sm">უკვე გაქვთ ანგარიში? შესვლა</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Success Modal -->
+    <div id="success-modal" class="fixed inset-0 bg-black bg-opacity-70 z-50 flex items-center justify-center hidden">
+        <div class="dark-card p-8 w-full max-w-md mx-4 text-center">
+            <div class="w-16 h-16 rounded-full bg-gradient-to-r from-green-500 to-emerald-400 flex items-center justify-center mx-auto mb-6">
+                <i class="fas fa-check text-white text-2xl"></i>
+            </div>
+            
+            <h3 class="text-2xl font-bold gradient-text mb-4" id="success-title">წარმატებულია!</h3>
+            <p class="text-gray-300 mb-6" id="success-message">თქვენი მოქმედება წარმატებით დასრულდა.</p>
+            
+            <button id="close-success-modal" class="btn-primary py-3 px-8 rounded-lg font-medium">გაგრძელება</button>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-gray-900 border-t border-gray-800 mt-12">
+        <div class="container mx-auto px-4 py-8">
+            <div class="flex flex-col md:flex-row justify-between items-center">
+                <div class="mb-6 md:mb-0">
+                    <div class="flex items-center">
+                        <div class="w-8 h-8 rounded-full bg-gradient-to-r from-green-500 to-emerald-400 mr-2"></div>
+                        <h2 class="text-xl font-bold gradient-text">sachivrebi.ge</h2>
+                    </div>
+                    <p class="text-gray-400 mt-2 text-sm">დაცული ფორუმი გასაზიარებლად - 2024 წლიდან</p>
+                </div>
+                
+                <div class="text-center md:text-right">
+                    <div class="text-gray-400 text-sm mb-2">
+                        <i class="fas fa-shield-alt mr-2"></i>
+                        თქვენი დაცვა ჩვენი პრიორიტეტია
+                    </div>
+                    <div class="text-xs text-gray-500">
+                        &copy; 2024 sachivrebi.ge. ყველა უფლება დაცულია
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Current state
+        let currentUser = null;
+        let currentLanguage = 'ka';
+        let isPostingAnonymous = true;
+        let posts = [];
+        let chatMessages = [];
+        let onlineCount = 247;
+        let postComments = {}; // Store comments for each post
+        
+        // Storage keys
+        const STORAGE_KEYS = {
+            POSTS: 'sachivrebi_posts',
+            COMMENTS: 'sachivrebi_comments',
+            CHAT: 'sachivrebi_chat',
+            USER: 'sachivrebi_user',
+            LANGUAGE: 'sachivrebi_language'
+        };
+        
+        // Load data from localStorage
+        function loadFromLocalStorage() {
+            try {
+                // Load posts
+                const savedPosts = localStorage.getItem(STORAGE_KEYS.POSTS);
+                if (savedPosts) {
+                    posts = JSON.parse(savedPosts);
+                }
+                
+                // Load comments
+                const savedComments = localStorage.getItem(STORAGE_KEYS.COMMENTS);
+                if (savedComments) {
+                    postComments = JSON.parse(savedComments);
+                }
+                
+                // Load chat messages
+                const savedChat = localStorage.getItem(STORAGE_KEYS.CHAT);
+                if (savedChat) {
+                    chatMessages = JSON.parse(savedChat);
+                }
+                
+                // Load user
+                const savedUser = localStorage.getItem(STORAGE_KEYS.USER);
+                if (savedUser) {
+                    currentUser = JSON.parse(savedUser);
+                }
+                
+                // Load language
+                const savedLanguage = localStorage.getItem(STORAGE_KEYS.LANGUAGE);
+                if (savedLanguage) {
+                    currentLanguage = savedLanguage;
+                }
+            } catch (error) {
+                console.error('Error loading from localStorage:', error);
+                // If there's an error, load sample data
+                loadSampleData();
+            }
+        }
+        
+        // Save data to localStorage
+        function saveToLocalStorage() {
+            try {
+                localStorage.setItem(STORAGE_KEYS.POSTS, JSON.stringify(posts));
+                localStorage.setItem(STORAGE_KEYS.COMMENTS, JSON.stringify(postComments));
+                localStorage.setItem(STORAGE_KEYS.CHAT, JSON.stringify(chatMessages));
+                localStorage.setItem(STORAGE_KEYS.LANGUAGE, currentLanguage);
+                
+                if (currentUser) {
+                    localStorage.setItem(STORAGE_KEYS.USER, JSON.stringify(currentUser));
+                } else {
+                    localStorage.removeItem(STORAGE_KEYS.USER);
+                }
+            } catch (error) {
+                console.error('Error saving to localStorage:', error);
+            }
+        }
+        
+        // Load sample data if no data exists
+        function loadSampleData() {
+            // Sample data for initial posts in Georgian
+            const samplePosts = [
+                {
+                    id: 1,
+                    title: "მაგარი დაღლილი ვარ მუშაობის გამო",
+                    content: "ყველაფერი ერთდროულად მომაწვა ზურგს. მძულს ჩემი უფროსი და გუშინ არ დამიძინებია.",
+                    author: "ანონიმური",
+                    isAnonymous: true,
+                    category: "worry",
+                    timestamp: "2 საათის წინ",
+                    likes: 24,
+                    comments: 12,
+                    tags: ["სამსახური", "სტრესი", "გადაღლილობა"]
+                },
+                {
+                    id: 2,
+                    title: "ჩემი მეზობლები ძალიან ხმაურობენ",
+                    content: "ინდურ სიმღერებს უსმენენ გვიან ღამემდე და ვერ დავიძინე ერთი კვირაა. მივუკარე და არ უსმენენ.",
+                    author: "ნათელა",
+                    isAnonymous: false,
+                    category: "complaint",
+                    timestamp: "5 საათის წინ",
+                    likes: 42,
+                    comments: 18,
+                    tags: ["მეზობლები", "ხმაური", "ბინა"]
+                },
+                {
+                    id: 3,
+                    title: "ავტობუსი ყოველთვის აგვიანებს?",
+                    content: "სამსახურში წასასვლელად ავტობუსზე ვარ დამოკიდებული და ყოველდღე აგვიანებს. ეს ძალიან მაწუხებს.",
+                    author: "ანონიმური",
+                    isAnonymous: true,
+                    category: "rant",
+                    timestamp: "1 დღის წინ",
+                    likes: 67,
+                    comments: 31,
+                    tags: ["ტრანსპორტი", "ქალაქი", "ფრუსტრაცია"]
+                },
+                {
+                    id: 4,
+                    title: "მეშინია მომავლის, გაქვთ ასეთი შიში?",
+                    content: "მოგესალმებით, მოგმართავთ, როგორც მკვლევარი და მომხმარებელი, რათა გაცნობოთ კვლევის შედეგად გამოვლენილი სერიოზული დარღვევების შესახებ, რომლებიც დაკავშირებულია ერთ-ერთი სავაჭრო ობიექტის მიერ რეალიზებულ პროდუქციასთან. კვლევის პროცესში დადგინდა, რომ აღნიშნულ პროდუქციას არ ჰქონდა დატანილი სავალდებულო ინფორმაცია, მათ შორის: შემადგენლობა, ვარგისიანობის ვადა და მწარმოებლის მონაცემები. აღნიშნული ფაქტი წარმოადგენს მომხმარებლის ინფორმაციის მიღების უფლების პირდაპირ დარღვევას. გარდა ამისა, ობიექტზე ვიზიტისას გამოვლინდა არაჯანსაღი და ანტისანიტარული გარემო, რაც საფრთხეს უქმნის მომხმარებელთა ჯანმრთელობასა და სიცოცხლეს. აღნიშნული ქმედებებით დაირღვა მომხმარებლის ძირითადი უფლებები, მათ შორის: უსაფრთხო პროდუქციის მიღების უფლება, ჯანმრთელობის დაცვის უფლება და ინფორმირებული არჩევანის გაკეთების უფლება. მსგავსი დარღვევები უარყოფითად აისახება მომხმარებელთა ყოველდღიურ ცხოვრებაზე, ზრდის ჯანმრთელობის დაზიანების რისკს და ამცირებს ნდობას სავაჭრო სექტორის მიმართ. მომხმარებელთა უფლებები დაცულია საქართველოს კანონით „მომხმარებელთა უფლებების დაცვის შესახებ“, რომლის მიხედვითაც მოვაჭრე ვალდებულია უზრუნველყოს უსაფრთხო, ხარისხიანი პროდუქციის რეალიზაცია და მომხმარებლისთვის სრულყოფილი ინფორმაციის მიწოდება. აღნიშნული უფლებების დაცვას უზრუნველყოფენ შესაბამისი სახელმწიფო ორგანოები, მათ შორის ზედამხედველობისა და კონტროლის სამსახურები, რომლებიც ვალდებულნი არიან დროულად მოახდინონ რეაგირება მსგავს დარღვევებზე. მიმაჩნია, რომ მომხმარებელთა უფლებების დაცვა წარმოადგენს დემოკრატიული სახელმწიფოს ერთ-ერთ უმნიშვნელოვანეს საფუძველს, რადგან ის უზრუნველყოფს მოქალაქეთა უსაფრთხოებას, ნდობას სახელმწიფო ინსტიტუტების მიმართ და სამართლიან ურთიერთობებს ბაზარზე. გთხოვთ, შეისწავლოთ აღნიშნული საკითხი, მოახდინოთ შესაბამისი რეაგირება და მიიღოთ ზომები გამოვლენილი დარღვევების აღმოსაფხვრელად. პატივისცემით, ნინი კვარაკვახიძე",
+                    author: "სალი ასანიძე",
+                    isAnonymous: false,
+                    category: "question",
+                    timestamp: "2 დღის წინ",
+                    likes: 89,
+                    comments: 45,
+                    tags: ["შიში", "მომავალი", "რჩევა"]
+                },
+                {
+                    id: 5,
+                    title: "მარტოსულად ვგრძნობ თავს ახალ ქალაქში",
+                    content: "ახალი სამსახურის გამო გადავედი აქ და არავის არ ვიცნობ. სამი თვეა და ჯერ არც ერთი მეგობარი არ მიჩუქებია. შაბათ-კვირას ძალიან რთულია.",
+                    author: "ანონიმური",
+                    isAnonymous: true,
+                    category: "worry",
+                    timestamp: "3 დღის წინ",
+                    likes: 102,
+                    comments: 58,
+                    tags: ["მარტოსულობა", "გადასვლა", "მეგობრები"]
+                },
+                {
+                    id: 6,
+                    title: "ბარგი მომპარეს წინდაუხედავად",
+                    content: "ეს მესამე შემთხვევაა ამ თვეში! ვიდეო კამერა დავაყენე მაგრამ პოლიცია ამბობს რომ ვერაფერს გააკეთებენ. ძალიან მაწუხებს ეს სიტუაცია.",
+                    author: "ანონიმური",
+                    isAnonymous: true,
+                    category: "complaint",
+                    timestamp: "4 დღის წინ",
+                    likes: 76,
+                    comments: 33,
+                    tags: ["ქურდობა", "უსაფრთხოება", "ფრუსტრაცია"]
+                }
+            ];
+            
+            // Sample chat messages in Georgian
+            const sampleChatMessages = [
+                { id: 1, user: "ადმინი", message: "მოგესალმებით საზოგადოების ჩატში! გთხოვთ პატივი ეცით ერთმანეთს.", timestamp: "10:00 AM", isAdmin: true },
+                { id: 2, user: "ანონიმური მომხმარებელი", message: "გამარჯობა ყველას, ახალივარ აქ. კარგი საზოგადოება ჩანს.", timestamp: "10:05 AM", isAnonymous: true },
+                { id: 3, user: "გიორგი", message: "კეთილი იყოს თქვენი მობრძანება! მე ამ პლატფორმამ ძალიან დამეხმარა გულის გამოფიტვაში.", timestamp: "10:07 AM", isAnonymous: false },
+                { id: 4, user: "ანონიმური მომხმარებელი 2", message: "რთული დღე მქონდა. ხანდახან გაკვირვებით ხდება მსგავსი სიტუაციის გაზიარება გონივრულ ადამიანებთან.", timestamp: "10:15 AM", isAnonymous: true },
+                { id: 5, user: "ადმინი", message: "ჩვენ აქ ვართ ერთმანეთის მხარდასაჭერად. თუ ვინმეს სჭირდება ფსიქოლოგიური მხარდაჭერა, გთხოვთ გადახედოთ 'ჩვენ შესახებ' განყოფილებას.", timestamp: "10:20 AM", isAdmin: true },
+                { id: 6, user: "ნინო", message: "მადლობა ამ სივრცის შექმნისთვის. მშვიდობას მაძლევს ის ფაქტი, რომ არ ვარ მარტო ჩემი წუხილებით.", timestamp: "10:25 AM", isAnonymous: false }
+            ];
+            
+            // Sample comments for posts
+            const sampleComments = {
+                1: [
+                    { id: 101, author: "მგზავრი", content: "ვიცი როგორ გრძნობ, მეც ასე ვარ. ძალიან რთულია.", timestamp: "1 საათის წინ", likes: 5 },
+                    { id: 102, author: "ანონიმური", content: "სცადე დროის მენეჯმენტის ტექნიკები.", timestamp: "45 წუთის წინ", likes: 3 }
+                ],
+                2: [
+                    { id: 201, author: "მეზობელი", content: "მეც მაქვს მსგავსი პრობლემა. უკვე პოლიციას ვმოვუხადე.", timestamp: "2 საათის წინ", likes: 8 },
+                    { id: 202, author: "ქირავნარი", content: "შენს ადგილას დამცავებს დავაყენებდი.", timestamp: "1 საათის წინ", likes: 4 }
+                ]
+            };
+            
+            // If no posts in localStorage, use sample data
+            if (!localStorage.getItem(STORAGE_KEYS.POSTS)) {
+                posts = [...samplePosts];
+            }
+            
+            if (!localStorage.getItem(STORAGE_KEYS.COMMENTS)) {
+                postComments = {...sampleComments};
+            }
+            
+            if (!localStorage.getItem(STORAGE_KEYS.CHAT)) {
+                chatMessages = [...sampleChatMessages];
+            }
+            
+            // Save sample data to localStorage
+            saveToLocalStorage();
+        }
+        
+        // Initialize the app
+        document.addEventListener('DOMContentLoaded', function() {
+            // Load data from localStorage
+            loadFromLocalStorage();
+            loadSampleData();
+            
+            // Initialize UI
+            renderPosts();
+            renderChatMessages();
+            updateOnlineCount();
+            setupEventListeners();
+            updateAuthUI();
+            updateLanguageUI();
+            
+            // Show home section by default
+            showSection('home');
+            
+            // Set up auto-update for online count
+            setInterval(updateOnlineCount, 30000);
+            
+            // Simulate new chat messages
+            setInterval(addRandomChatMessage, 120000);
+        });
+        
+        // Set up event listeners
+        function setupEventListeners() {
+            // Navigation
+            document.querySelectorAll('.nav-link').forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const section = this.getAttribute('data-section');
+                    showSection(section);
+                    closeMobileMenu();
+                });
+            });
+            
+            // Post type selection
+            document.getElementById('post-type-anonymous').addEventListener('click', function() {
+                setPostType(true);
+            });
+            
+            document.getElementById('post-type-public').addEventListener('click', function() {
+                setPostType(false);
+            });
+            
+            // Character counter for post content
+            document.getElementById('post-content').addEventListener('input', function() {
+                const count = this.value.length;
+                document.getElementById('char-count').textContent = count;
+                
+                if (count > 1000) {
+                    this.classList.add('border-red-500');
+                    document.getElementById('char-count').classList.add('text-red-500');
+                } else {
+                    this.classList.remove('border-red-500');
+                    document.getElementById('char-count').classList.remove('text-red-500');
+                }
+            });
+            
+            // Submit post
+            document.getElementById('submit-post').addEventListener('click', submitPost);
+            
+            // New post button in forum
+            document.getElementById('new-post-btn').addEventListener('click', function() {
+                showSection('home');
+                // Scroll to post form
+                setTimeout(() => {
+                    document.querySelector('#home').scrollIntoView({ behavior: 'smooth' });
+                }, 100);
+            });
+            
+            // Filter buttons in home
+            document.querySelectorAll('#home .btn-secondary').forEach(btn => {
+                if (btn !== document.getElementById('filter-all')) {
+                    btn.addEventListener('click', function() {
+                        const category = this.getAttribute('data-category');
+                        filterHomePosts(category);
+                    });
+                }
+            });
+            
+            // Filter buttons in forum
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    // Remove active class from all buttons
+                    document.querySelectorAll('.filter-btn').forEach(b => {
+                        b.classList.remove('active');
+                        b.classList.remove('btn-primary');
+                        b.classList.add('btn-secondary');
+                    });
+                    
+                    // Add active class to clicked button
+                    this.classList.add('active');
+                    this.classList.remove('btn-secondary');
+                    this.classList.add('btn-primary');
+                    
+                    const filter = this.getAttribute('data-filter');
+                    filterPosts(filter);
+                });
+            });
+            
+            // Chat functionality
+            document.getElementById('send-chat-btn').addEventListener('click', sendChatMessage);
+            document.getElementById('chat-input').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    sendChatMessage();
+                }
+            });
+            
+            // Auth buttons
+            document.getElementById('login-btn').addEventListener('click', showLoginModal);
+            document.getElementById('register-btn').addEventListener('click', showRegisterModal);
+            document.getElementById('login-btn-mobile').addEventListener('click', showLoginModal);
+            document.getElementById('register-btn-mobile').addEventListener('click', showRegisterModal);
+            
+            // Modal controls
+            document.getElementById('close-login-modal').addEventListener('click', closeLoginModal);
+            document.getElementById('close-success-modal').addEventListener('click', closeSuccessModal);
+            
+            // Switch between login and register
+            document.getElementById('switch-to-register').addEventListener('click', showRegisterForm);
+            document.getElementById('switch-to-login').addEventListener('click', showLoginForm);
+            
+            // Submit auth forms
+            document.getElementById('submit-login').addEventListener('click', submitLogin);
+            document.getElementById('submit-register').addEventListener('click', submitRegister);
+            
+            // Logout
+            document.getElementById('logout-btn').addEventListener('click', logoutUser);
+            document.getElementById('logout-btn-mobile').addEventListener('click', logoutUser);
+            
+            // Mobile menu
+            document.getElementById('mobile-menu-btn').addEventListener('click', openMobileMenu);
+            document.getElementById('mobile-menu-close').addEventListener('click', closeMobileMenu);
+            
+            // Click outside mobile menu to close
+            document.getElementById('mobile-menu').addEventListener('click', function(e) {
+                if (e.target.id === 'mobile-menu') {
+                    closeMobileMenu();
+                }
+            });
+            
+            // Language switcher
+            document.getElementById('language-select').addEventListener('change', function() {
+                changeLanguage(this.value);
+            });
+            
+            document.getElementById('language-select-mobile').addEventListener('change', function() {
+                changeLanguage(this.value);
+            });
+        }
+        
+        // Language switching
+        function changeLanguage(lang) {
+            currentLanguage = lang;
+            saveToLocalStorage();
+            updateLanguageUI();
+        }
+        
+        function updateLanguageUI() {
+            // Update selectors
+            document.getElementById('language-select').value = currentLanguage;
+            document.getElementById('language-select-mobile').value = currentLanguage;
+            
+            // Update UI elements based on language
+            if (currentLanguage === 'en') {
+                // Switch to English
+                document.querySelector('[data-section="home"]').textContent = 'Home';
+                document.querySelector('[data-section="forum"]').textContent = 'Forum';
+                document.querySelector('[data-section="chat"]').textContent = 'Chat';
+                document.querySelector('[data-section="about"]').textContent = 'About';
+                
+                document.getElementById('login-btn').textContent = 'Login';
+                document.getElementById('register-btn').textContent = 'Register';
+                document.getElementById('login-btn-mobile').textContent = 'Login';
+                document.getElementById('register-btn-mobile').textContent = 'Register';
+                
+                // Update post type indicator
+                updatePostTypeIndicator();
+            } else {
+                // Switch to Georgian (default)
+                document.querySelector('[data-section="home"]').textContent = 'მთავარი';
+                document.querySelector('[data-section="forum"]').textContent = 'ფორუმი';
+                document.querySelector('[data-section="chat"]').textContent = 'ჩატი';
+                document.querySelector('[data-section="about"]').textContent = 'ჩვენ შესახებ';
+                
+                document.getElementById('login-btn').textContent = 'შესვლა';
+                document.getElementById('register-btn').textContent = 'რეგისტრაცია';
+                document.getElementById('login-btn-mobile').textContent = 'შესვლა';
+                document.getElementById('register-btn-mobile').textContent = 'რეგისტრაცია';
+                
+                // Update post type indicator
+                updatePostTypeIndicator();
+            }
+        }
+        
+        // Section navigation
+        function showSection(sectionId) {
+            // Hide all sections
+            document.querySelectorAll('.section').forEach(section => {
+                section.classList.add('hidden');
+            });
+            
+            // Show selected section
+            document.getElementById(sectionId).classList.remove('hidden');
+            
+            // Update active nav link
+            document.querySelectorAll('.nav-link').forEach(link => {
+                if (link.getAttribute('data-section') === sectionId) {
+                    link.classList.add('text-green-400');
+                } else {
+                    link.classList.remove('text-green-400');
+                }
+            });
+            
+            // If showing forum, render forum posts
+            if (sectionId === 'forum') {
+                renderForumPosts();
+            }
+        }
+        
+        // Post type handling
+        function setPostType(isAnonymous) {
+            isPostingAnonymous = isAnonymous;
+            
+            const anonymousBtn = document.getElementById('post-type-anonymous');
+            const publicBtn = document.getElementById('post-type-public');
+            
+            if (isAnonymous) {
+                anonymousBtn.classList.add('border-green-500');
+                anonymousBtn.classList.remove('border-gray-700');
+                publicBtn.classList.add('border-gray-700');
+                publicBtn.classList.remove('border-green-500');
+                
+                if (currentLanguage === 'en') {
+                    document.getElementById('submit-post').textContent = 'Submit Anonymously';
+                } else {
+                    document.getElementById('submit-post').textContent = 'დადასტურება ანონიმურად';
+                }
+            } else {
+                publicBtn.classList.add('border-green-500');
+                publicBtn.classList.remove('border-gray-700');
+                anonymousBtn.classList.add('border-gray-700');
+                anonymousBtn.classList.remove('border-green-500');
+                
+                if (currentUser) {
+                    if (currentLanguage === 'en') {
+                        document.getElementById('submit-post').textContent = 'Submit as ' + currentUser.username;
+                    } else {
+                        document.getElementById('submit-post').textContent = 'დადასტურება როგორც ' + currentUser.username;
+                    }
+                } else {
+                    if (currentLanguage === 'en') {
+                        document.getElementById('submit-post').textContent = 'Submit Publicly';
+                    } else {
+                        document.getElementById('submit-post').textContent = 'დადასტურება საჯაროდ';
+                    }
+                }
+            }
+            
+            updatePostTypeIndicator();
+        }
+        
+        function updatePostTypeIndicator() {
+            const indicator = document.getElementById('post-type-indicator');
+            
+            if (isPostingAnonymous) {
+                if (currentLanguage === 'en') {
+                    indicator.textContent = '🕵️ You\'re posting anonymously';
+                } else {
+                    indicator.textContent = '🕵️ თქვენ ანონიმურად აქვეყნებთ';
+                }
+            } else {
+                if (currentLanguage === 'en') {
+                    indicator.textContent = '👤 You\'re posting publicly';
+                } else {
+                    indicator.textContent = '👤 თქვენ საჯაროდ აქვეყნებთ';
+                }
+            }
+        }
+        
+        // Post submission
+        function submitPost() {
+            const title = document.getElementById('post-title').value.trim();
+            const content = document.getElementById('post-content').value.trim();
+            const category = document.getElementById('post-category').value;
+            const tagsInput = document.getElementById('post-tags-input').value.trim();
+            
+            if (!title || !content) {
+                if (currentLanguage === 'en') {
+                    showSuccessModal('Please fill in both title and content', false);
+                } else {
+                    showSuccessModal('გთხოვთ შეავსოთ როგორც სათაური, ასევე კონტენტი', false);
+                }
+                return;
+            }
+            
+            if (content.length > 1000) {
+                if (currentLanguage === 'en') {
+                    showSuccessModal('Post content must be 1000 characters or less', false);
+                } else {
+                    showSuccessModal('პოსტის კონტენტი უნდა იყოს 1000 სიმბოლოზე ნაკლები', false);
+                }
+                return;
+            }
+            
+            // Process tags
+            const tags = tagsInput ? tagsInput.split(',').map(tag => tag.trim()).filter(tag => tag.length > 0) : [];
+            
+            // Create new post object
+            const newPost = {
+                id: Date.now(), // Use timestamp for unique ID
+                title: title,
+                content: content,
+                author: isPostingAnonymous ? 'ანონიმური' : (currentUser ? currentUser.username : ''),
+                // isAnonymous:,
+                category: category,
+                timestamp: 'ახლახან',
+                likes: 45,
+                comments: 190,
+                tags: tags
+            };
+            
+            // Add to posts array at the beginning
+            posts.unshift(newPost);
+            
+            // Initialize comments array for this post
+            if (!postComments[newPost.id]) {
+                postComments[newPost.id] = [];
+            }
+            
+            // Save to localStorage
+            saveToLocalStorage();
+            
+            // Clear form
+            document.getElementById('post-title').value = '';
+            document.getElementById('post-content').value = '';
+            document.getElementById('post-tags-input').value = '';
+            document.getElementById('char-count').textContent = '0';
+            
+            // Update UI
+            renderPosts();
+            renderForumPosts();
+            
+            // Show success message
+            if (currentLanguage === 'en') {
+                showSuccessModal('Your post has been submitted successfully!', true);
+            } else {
+                showSuccessModal('თქვენი პოსტი წარმატებით გაიგზავნა!', true);
+            }
+        }
+        
+        // Render posts in home section
+        function renderPosts() {
+            const container = document.getElementById('posts-container');
+            container.innerHTML = '';
+            
+            // Show only first 6 posts
+            const postsToShow = posts.slice(0, 6);
+            
+            postsToShow.forEach(post => {
+                const postElement = createPostElement(post, false);
+                container.appendChild(postElement);
+            });
+        }
+        
+        // Render posts in forum section
+        function renderForumPosts() {
+            const container = document.getElementById('forum-posts-container');
+            container.innerHTML = '';
+            
+            posts.forEach(post => {
+                const postElement = createPostElement(post, true);
+                container.appendChild(postElement);
+            });
+        }
+        
+        // Create a post element
+        function createPostElement(post, isForumView) {
+            const postElement = document.createElement('div');
+            postElement.className = 'dark-card post-card p-5';
+            postElement.dataset.postId = post.id;
+            postElement.dataset.category = post.category;
+            postElement.dataset.type = post.isAnonymous ? 'anonymous' : 'public';
+            
+            // Category badge color and text
+            let categoryColor = 'bg-gray-700';
+            let categoryText = '';
+            
+            switch(post.category) {
+                case 'worry': categoryColor = 'bg-blue-900'; categoryText = '😟 წუხილი'; break;
+                case 'complaint': categoryColor = 'bg-yellow-900'; categoryText = '😤 საჩივარი'; break;
+                case 'rant': categoryColor = 'bg-red-900'; categoryText = '😠 გაბრაზებული'; break;
+                case 'question': categoryColor = 'bg-purple-900'; categoryText = '🤔 კითხვა'; break;
+                default: categoryColor = 'bg-gray-700'; categoryText = '📝 სხვა';
+            }
+            
+            postElement.innerHTML = `
+                <div class="flex justify-between items-start mb-3">
+                    <div class="flex items-center">
+                        <div class="w-10 h-10 rounded-full ${post.isAnonymous ? 'bg-gray-700' : 'bg-gradient-to-r from-green-500 to-emerald-400'} flex items-center justify-center mr-3">
+                            <i class="fas ${post.isAnonymous ? 'fa-user-secret' : 'fa-user'} ${post.isAnonymous ? 'anonymous-icon' : 'public-icon'}"></i>
+                        </div>
+                        <div>
+                            <div class="font-medium">${post.author || 'ნინი კვარაკვახიძე'}</div>
+                            <div class="text-xs text-gray-400">${post.timestamp}</div>
+                        </div>
+                    </div>
+                    <div class="flex items-center">
+                        <span class="${categoryColor} text-xs text-white px-3 py-1 rounded-full">${categoryText}</span>
+                    </div>
+                </div>
+                
+                <h4 class="font-bold text-lg mb-3">${post.title}</h4>
+                <p class="text-gray-300 mb-4">${post.content}</p>
+                
+                ${post.tags && post.tags.length > 0 ? `
+                <div class="flex flex-wrap gap-2 mb-4">
+                    ${post.tags.map(tag => `<span class="bg-gray-800 text-gray-300 text-xs px-3 py-1 rounded-full">#${tag}</span>`).join('')}
+                </div>
+                ` : ''}
+                
+                <div class="flex justify-between items-center pt-4 border-t border-gray-800 post-actions">
+                    <div class="flex space-x-4">
+                        <button class="reaction-btn flex items-center text-gray-400 hover:text-red-500 transition post-action-btn" data-post-id="${post.id}">
+                            <i class="far fa-heart mr-1"></i>
+                            <span class="text-sm like-count">${post.likes}</span>
+                        </button>
+                        <button class="comment-btn flex items-center text-gray-400 hover:text-blue-400 transition post-action-btn" data-post-id="${post.id}">
+                            <i class="far fa-comment mr-1"></i>
+                            <span class="text-sm comment-count">${post.comments}</span>
+                        </button>
+                        <button class="flex items-center text-gray-400 hover:text-green-400 transition post-action-btn">
+                            <i class="far fa-share-square mr-1"></i>
+                            <span class="text-sm">გაზიარება</span>
+                        </button>
+                    </div>
+                    
+                    <div class="flex items-center">
+                        <button class="bookmark-btn text-gray-400 hover:text-yellow-500 transition">
+                            <i class="far fa-bookmark"></i>
+                        </button>
+                    </div>
+                </div>
+                
+                ${isForumView ? `
+                <div class="comment-section mt-4 pt-4 border-t border-gray-800 hidden" data-post-id="${post.id}">
+                    <div class="mb-4">
+                        <textarea class="comment-input w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-green-500 resize-none" rows="2" placeholder="${currentLanguage === 'en' ? 'Write a comment...' : 'დაწერეთ კომენტარი...'}"></textarea>
+                        <div class="flex justify-end mt-2">
+                            <button class="submit-comment btn-primary py-2 px-4 rounded-lg text-sm font-medium" data-post-id="${post.id}">${currentLanguage === 'en' ? 'Post Comment' : 'კომენტარის დამატება'}</button>
+                        </div>
+                    </div>
+                    <div class="comments-list" data-post-id="${post.id}">
+                        ${postComments[post.id] && postComments[post.id].length > 0 ? 
+                            postComments[post.id].map(comment => `
+                                <div class="comment-item bg-gray-800 rounded-lg p-3 mb-3" data-comment-id="${comment.id}">
+                                    <div class="flex justify-between items-start mb-2">
+                                        <div class="flex items-center">
+                                            <div class="w-6 h-6 rounded-full ${comment.author === 'ანონიმური' ? 'bg-gray-700' : 'bg-gradient-to-r from-green-500 to-emerald-400'} flex items-center justify-center mr-2">
+                                                <i class="fas ${comment.author === 'ანონიმური' ? 'fa-user-secret' : 'fa-user'} text-xs text-white"></i>
+                                            </div>
+                                            <div class="text-sm font-medium">${comment.author}</div>
+                                        </div>
+                                        <div class="text-xs text-gray-400">${comment.timestamp}</div>
+                                    </div>
+                                    <p class="text-gray-300 text-sm mb-2">${comment.content}</p>
+                                    <div class="flex justify-between items-center">
+                                        <button class="comment-reaction-btn flex items-center text-gray-400 hover:text-red-500 text-xs" data-comment-id="${comment.id}">
+                                            <i class="far fa-heart mr-1"></i>
+                                            <span class="comment-like-count">${comment.likes}</span>
+                                        </button>
+                                        <button class="reply-comment-btn text-gray-400 hover:text-blue-400 text-xs" data-comment-id="${comment.id}">
+                                            <i class="fas fa-reply mr-1"></i>პასუხი
+                                        </button>
+                                    </div>
+                                </div>
+                            `).join('') : 
+                            `<div class="text-gray-400 text-sm text-center py-4">${currentLanguage === 'en' ? 'No comments yet. Be the first to comment!' : 'ჯერ არ არის კომენტარები. იყავით პირველი!'}</div>`
+                        }
+                    </div>
+                </div>
+                ` : ''}
+            `;
+            
+            // Add event listeners for this post
+            const reactionBtn = postElement.querySelector('.reaction-btn');
+            const commentBtn = postElement.querySelector('.comment-btn');
+            const bookmarkBtn = postElement.querySelector('.bookmark-btn');
+            
+            reactionBtn.addEventListener('click', function() {
+                const postId = this.getAttribute('data-post-id');
+                const heartIcon = this.querySelector('i');
+                const countSpan = this.querySelector('.like-count');
+                const postIndex = posts.findIndex(p => p.id == postId);
+                
+                if (postIndex !== -1) {
+                    if (heartIcon.classList.contains('far')) {
+                        heartIcon.classList.remove('far');
+                        heartIcon.classList.add('fas', 'reaction-active');
+                        posts[postIndex].likes += 1;
+                        countSpan.textContent = posts[postIndex].likes;
+                    } else {
+                        heartIcon.classList.remove('fas', 'reaction-active');
+                        heartIcon.classList.add('far');
+                        posts[postIndex].likes -= 1;
+                        countSpan.textContent = posts[postIndex].likes;
+                    }
+                    
+                    // Save updated likes to localStorage
+                    saveToLocalStorage();
+                }
+            });
+            
+            if (commentBtn) {
+                commentBtn.addEventListener('click', function() {
+                    const postId = this.getAttribute('data-post-id');
+                    const commentSection = postElement.querySelector('.comment-section');
+                    commentSection.classList.toggle('hidden');
+                    
+                    // If opening comments, scroll to comment section
+                    if (!commentSection.classList.contains('hidden')) {
+                        setTimeout(() => {
+                            commentSection.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                        }, 100);
+                    }
+                });
+            }
+            
+            bookmarkBtn.addEventListener('click', function() {
+                const bookmarkIcon = this.querySelector('i');
+                
+                if (bookmarkIcon.classList.contains('far')) {
+                    bookmarkIcon.classList.remove('far');
+                    bookmarkIcon.classList.add('fas', 'text-yellow-500');
+                } else {
+                    bookmarkIcon.classList.remove('fas', 'text-yellow-500');
+                    bookmarkIcon.classList.add('far');
+                }
+            });
+            
+            // Add event listener for comment submission if in forum view
+            if (isForumView) {
+                const submitCommentBtn = postElement.querySelector('.submit-comment');
+                if (submitCommentBtn) {
+                    submitCommentBtn.addEventListener('click', function() {
+                        const postId = parseInt(this.getAttribute('data-post-id'));
+                        const commentInput = postElement.querySelector('.comment-input');
+                        const commentText = commentInput.value.trim();
+                        
+                        if (commentText) {
+                            // Create new comment
+                            const newComment = {
+                                id: Date.now(),
+                                author: currentUser ? currentUser.username : 'ანონიმური',
+                                content: commentText,
+                                timestamp: 'ახლახან',
+                                likes: 0
+                            };
+                            
+                            // Add comment to postComments object
+                            if (!postComments[postId]) {
+                                postComments[postId] = [];
+                            }
+                            postComments[postId].unshift(newComment);
+                            
+                            // Update post comments count
+                            const postIndex = posts.findIndex(p => p.id == postId);
+                            if (postIndex !== -1) {
+                                posts[postIndex].comments += 1;
+                            }
+                            
+                            // Save to localStorage
+                            saveToLocalStorage();
+                            
+                            // Update UI
+                            const commentCountSpan = postElement.querySelector('.comment-count');
+                            commentCountSpan.textContent = posts[postIndex].comments;
+                            
+                            // Add comment to comments list
+                            const commentsList = postElement.querySelector('.comments-list');
+                            const commentElement = document.createElement('div');
+                            commentElement.className = 'comment-item bg-gray-800 rounded-lg p-3 mb-3';
+                            commentElement.setAttribute('data-comment-id', newComment.id);
+                            commentElement.innerHTML = `
+                                <div class="flex justify-between items-start mb-2">
+                                    <div class="flex items-center">
+                                        <div class="w-6 h-6 rounded-full ${newComment.author === 'ანონიმური' ? 'bg-gray-700' : 'bg-gradient-to-r from-green-500 to-emerald-400'} flex items-center justify-center mr-2">
+                                            <i class="fas ${newComment.author === 'ანონიმური' ? 'fa-user-secret' : 'fa-user'} text-xs text-white"></i>
+                                        </div>
+                                        <div class="text-sm font-medium">${newComment.author}</div>
+                                    </div>
+                                    <div class="text-xs text-gray-400">${newComment.timestamp}</div>
+                                </div>
+                                <p class="text-gray-300 text-sm mb-2">${newComment.content}</p>
+                                <div class="flex justify-between items-center">
+                                    <button class="comment-reaction-btn flex items-center text-gray-400 hover:text-red-500 text-xs" data-comment-id="${newComment.id}">
+                                        <i class="far fa-heart mr-1"></i>
+                                        <span class="comment-like-count">${newComment.likes}</span>
+                                    </button>
+                                    <button class="reply-comment-btn text-gray-400 hover:text-blue-400 text-xs" data-comment-id="${newComment.id}">
+                                        <i class="fas fa-reply mr-1"></i>პასუხი
+                                    </button>
+                                </div>
+                            `;
+                            
+                            // Add event listener for comment reaction
+                            const commentReactionBtn = commentElement.querySelector('.comment-reaction-btn');
+                            commentReactionBtn.addEventListener('click', function() {
+                                const commentId = parseInt(this.getAttribute('data-comment-id'));
+                                const heartIcon = this.querySelector('i');
+                                const countSpan = this.querySelector('.comment-like-count');
+                                
+                                // Find the comment in postComments
+                                const commentIndex = postComments[postId].findIndex(c => c.id === commentId);
+                                if (commentIndex !== -1) {
+                                    if (heartIcon.classList.contains('far')) {
+                                        heartIcon.classList.remove('far');
+                                        heartIcon.classList.add('fas', 'reaction-active');
+                                        postComments[postId][commentIndex].likes += 1;
+                                        countSpan.textContent = postComments[postId][commentIndex].likes;
+                                    } else {
+                                        heartIcon.classList.remove('fas', 'reaction-active');
+                                        heartIcon.classList.add('far');
+                                        postComments[postId][commentIndex].likes -= 1;
+                                        countSpan.textContent = postComments[postId][commentIndex].likes;
+                                    }
+                                    
+                                    // Save updated comment likes to localStorage
+                                    saveToLocalStorage();
+                                }
+                            });
+                            
+                            // If there's a "no comments" message, remove it
+                            const noCommentsMsg = commentsList.querySelector('.text-center');
+                            if (noCommentsMsg) {
+                                noCommentsMsg.remove();
+                            }
+                            
+                            commentsList.prepend(commentElement);
+                            
+                            // Clear input
+                            commentInput.value = '';
+                            
+                            // Show success message
+                            if (currentLanguage === 'en') {
+                                showSuccessModal('Comment added successfully!', true);
+                            } else {
+                                showSuccessModal('კომენტარი წარმატებით დაემატა!', true);
+                            }
+                        }
+                    });
+                }
+                
+                // Add event listeners to existing comment reaction buttons
+                const commentReactionBtns = postElement.querySelectorAll('.comment-reaction-btn');
+                commentReactionBtns.forEach(btn => {
+                    btn.addEventListener('click', function() {
+                        const commentId = parseInt(this.getAttribute('data-comment-id'));
+                        const postId = parseInt(postElement.dataset.postId);
+                        const heartIcon = this.querySelector('i');
+                        const countSpan = this.querySelector('.comment-like-count');
+                        
+                        // Find the comment in postComments
+                        const commentIndex = postComments[postId].findIndex(c => c.id === commentId);
+                        if (commentIndex !== -1) {
+                            if (heartIcon.classList.contains('far')) {
+                                heartIcon.classList.remove('far');
+                                heartIcon.classList.add('fas', 'reaction-active');
+                                postComments[postId][commentIndex].likes += 1;
+                                countSpan.textContent = postComments[postId][commentIndex].likes;
+                            } else {
+                                heartIcon.classList.remove('fas', 'reaction-active');
+                                heartIcon.classList.add('far');
+                                postComments[postId][commentIndex].likes -= 1;
+                                countSpan.textContent = postComments[postId][commentIndex].likes;
+                            }
+                            
+                            // Save updated comment likes to localStorage
+                            saveToLocalStorage();
+                        }
+                    });
+                });
+            }
+            
+            return postElement;
+        }
+        
+        // Filter posts by category in home
+        function filterHomePosts(category) {
+            const allPosts = document.querySelectorAll('#posts-container > div');
+            
+            allPosts.forEach(post => {
+                if (category === 'all' || post.dataset.category === category) {
+                    post.classList.remove('hidden');
+                } else {
+                    post.classList.add('hidden');
+                }
+            });
+        }
+        
+        // Filter posts in forum
+        function filterPosts(filter) {
+            const allPosts = document.querySelectorAll('#forum-posts-container > div');
+            
+            allPosts.forEach(post => {
+                if (filter === 'all') {
+                    post.classList.remove('hidden');
+                } else {
+                    const postCategory = post.dataset.category;
+                    const postType = post.dataset.type;
+                    
+                    if (filter === postCategory || 
+                        (filter === 'anonymous' && postType === 'anonymous') ||
+                        (filter === 'public' && postType === 'public')) {
+                        post.classList.remove('hidden');
+                    } else {
+                        post.classList.add('hidden');
+                    }
+                }
+            });
+        }
+        
+        // Chat functionality
+        function renderChatMessages() {
+            const container = document.getElementById('chat-messages');
+            container.innerHTML = '';
+            
+            chatMessages.forEach(message => {
+                const messageElement = createChatMessageElement(message);
+                container.appendChild(messageElement);
+            });
+            
+            // Scroll to bottom
+            container.scrollTop = container.scrollHeight;
+        }
+        
+        function createChatMessageElement(message) {
+            const messageElement = document.createElement('div');
+            messageElement.className = `chat-message mb-4 ${message.isAdmin ? 'bg-green-900 bg-opacity-30' : 'bg-gray-700'} rounded-lg p-4`;
+            
+            messageElement.innerHTML = `
+                <div class="flex justify-between items-start mb-2">
+                    <div class="flex items-center">
+                        <div class="w-8 h-8 rounded-full ${message.isAdmin ? 'bg-green-600' : (message.isAnonymous ? 'bg-gray-600' : 'bg-gradient-to-r from-green-500 to-emerald-400')} flex items-center justify-center mr-2">
+                            <i class="fas ${message.isAdmin ? 'fa-shield-alt' : (message.isAnonymous ? 'fa-user-secret' : 'fa-user')} text-white text-sm"></i>
+                        </div>
+                        <div>
+                            <div class="font-medium ${message.isAdmin ? 'text-green-400' : ''}">${message.user}</div>
+                            <div class="text-xs text-gray-400">${message.timestamp}</div>
+                        </div>
+                    </div>
+                    ${message.isAdmin ? '<span class="bg-green-800 text-green-200 text-xs px-2 py-1 rounded">ადმინი</span>' : ''}
+                </div>
+                <p class="text-gray-100">${message.message}</p>
+            `;
+            
+            return messageElement;
+        }
+        
+        function sendChatMessage() {
+            const input = document.getElementById('chat-input');
+            const messageText = input.value.trim();
+            const identitySelect = document.getElementById('chat-identity');
+            const identity = identitySelect.options[identitySelect.selectedIndex].value;
+            
+            if (!messageText) return;
+            
+            // Create new message
+            const isAnonymous = identity === 'anonymous';
+            const newMessage = {
+                id: Date.now(),
+                user: isAnonymous ? 'ანონიმური მომხმარებელი' : (currentUser ? currentUser.username : 'ნინი კვარაკვახიძე'),
+                message: messageText,
+                timestamp: getCurrentTime(),
+                isAnonymous: isAnonymous,
+                isAdmin: false
+            };
+            
+            // Add to chat
+            chatMessages.push(newMessage);
+            
+            // Save to localStorage
+            saveToLocalStorage();
+            
+            // Clear input
+            input.value = '';
+            
+            // Update UI
+            const messageElement = createChatMessageElement(newMessage);
+            document.getElementById('chat-messages').appendChild(messageElement);
+            
+            // Scroll to bottom
+            const chatContainer = document.querySelector('#chat-messages').parentElement;
+            chatContainer.scrollTop = chatContainer.scrollHeight;
+            
+            // Show success message
+            if (currentLanguage === 'en') {
+                showSuccessModal('Message sent to chat!', true);
+            } else {
+                showSuccessModal('შეტყობინება გაიგზავნა ჩატში!', true);
+            }
+            
+            // Simulate admin response occasionally
+            if (Math.random() > 0.7) {
+                setTimeout(() => {
+                    const adminResponses = currentLanguage === 'en' ? [
+                        "Thanks for sharing that with the community.",
+                        "We appreciate your contribution to the conversation.",
+                        "That's an important perspective, thank you.",
+                        "If anyone has similar experiences, feel free to share.",
+                        "Remember, this is a supportive space for everyone."
+                    ] : [
+                        "გმადლობთ გაზიარებისთვის საზოგადოებასთან.",
+                        "ჩვენ ვაფასებთ თქვენს წვლილს საუბარში.",
+                        "ეს მნიშვნელოვანი თვალსაზრისია, გმადლობთ.",
+                        "თუ ვინმეს აქვს მსგავსი გამოცდილება, მოგვიყვეთ.",
+                        "დაიმახსოვრეთ, ეს მხარდაჭერის სივრცეა ყველასთვის."
+                    ];
+                    
+                    const adminMessage = {
+                        id: Date.now(),
+                        user: "ადმინი",
+                        message: adminResponses[Math.floor(Math.random() * adminResponses.length)],
+                        timestamp: getCurrentTime(),
+                        isAnonymous: false,
+                        isAdmin: true
+                    };
+                    
+                    chatMessages.push(adminMessage);
+                    saveToLocalStorage();
+                    
+                    const adminElement = createChatMessageElement(adminMessage);
+                    document.getElementById('chat-messages').appendChild(adminElement);
+                    
+                    // Scroll to bottom
+                    chatContainer.scrollTop = chatContainer.scrollHeight;
+                }, 2000);
+            }
+        }
+        
+        function addRandomChatMessage() {
+            const randomUsers = currentLanguage === 'en' ? 
+                ["AnonymousUser", "NewMember", "ThoughtfulSoul", "Listener", "Helper"] :
+                ["ანონიმური მომხმარებელი", "ახალი წევრი", "გონიერი სული", "მსმენელი", "დამხმარე"];
+            
+            const randomMessages = currentLanguage === 'en' ? [
+                "Just checking in, hope everyone is having an okay day.",
+                "This community has been really helpful for me lately.",
+                "Sometimes it's nice to just read other people's thoughts.",
+                "Remember to take care of yourselves, everyone.",
+                "If you're struggling today, you're not alone."
+            ] : [
+                "უბრალოდ ვამოწმებ, იმედია ყველას კარგი დღე აქვს.",
+                "ეს საზოგადოება ბოლო დროს ძალიან დამეხმარა.",
+                "ხანდახან სასიამოვნოა სხვა ადამიანების აზრების წაკითხვა.",
+                "გაიხსენეთ, რომ საკუთარი თავის ზრუნვა მნიშვნელოვანია, ყველას.",
+                "თუ დღეს რთულობთ, იცოდეთ, რომ მარტო არ ხართ."
+            ];
+            
+            const randomMessage = {
+                id: Date.now(),
+                user: randomUsers[Math.floor(Math.random() * randomUsers.length)],
+                message: randomMessages[Math.floor(Math.random() * randomMessages.length)],
+                timestamp: getCurrentTime(),
+                isAnonymous: true,
+                isAdmin: false
+            };
+            
+            chatMessages.push(randomMessage);
+            saveToLocalStorage();
+            
+            // Only update UI if chat section is visible
+            if (!document.getElementById('chat').classList.contains('hidden')) {
+                const messageElement = createChatMessageElement(randomMessage);
+                document.getElementById('chat-messages').appendChild(messageElement);
+                
+                // Scroll to bottom
+                const chatContainer = document.querySelector('#chat-messages').parentElement;
+                chatContainer.scrollTop = chatContainer.scrollHeight;
+            }
+        }
+        
+        // Auth functionality
+        function showLoginModal() {
+            document.getElementById('login-modal').classList.remove('hidden');
+            showLoginForm();
+            closeMobileMenu();
+        }
+        
+        function showRegisterModal() {
+            document.getElementById('login-modal').classList.remove('hidden');
+            showRegisterForm();
+            closeMobileMenu();
+        }
+        
+        function closeLoginModal() {
+            document.getElementById('login-modal').classList.add('hidden');
+        }
+        
+        function showLoginForm() {
+            document.getElementById('login-form').classList.remove('hidden');
+            document.getElementById('register-form').classList.add('hidden');
+        }
+        
+        function showRegisterForm() {
+            document.getElementById('register-form').classList.remove('hidden');
+            document.getElementById('login-form').classList.add('hidden');
+        }
+        
+        function submitLogin() {
+            const username = document.getElementById('login-username').value.trim();
+            const password = document.getElementById('login-password').value.trim();
+            
+            if (!username || !password) {
+                if (currentLanguage === 'en') {
+                    showSuccessModal('Please fill in all fields', false);
+                } else {
+                    showSuccessModal('გთხოვთ შეავსოთ ყველა ველი', false);
+                }
+                return;
+            }
+            
+            // Simulate login (in a real app, this would be an API call)
+            currentUser = {
+                username: username,
+                email: username.includes('@') ? username : `${username}@example.com`
+            };
+            
+            // Save user to localStorage
+            saveToLocalStorage();
+            
+            // Update UI
+            updateAuthUI();
+            
+            // Close modal and show success
+            closeLoginModal();
+            if (currentLanguage === 'en') {
+                showSuccessModal('Login successful! Welcome back.', true);
+            } else {
+                showSuccessModal('შესვლა წარმატებულია! კეთილი იყოს თქვენი მობრძანება.', true);
+            }
+            
+            // Update post type if needed
+            if (!isPostingAnonymous) {
+                setPostType(false);
+            }
+        }
+        
+        function submitRegister() {
+            const username = document.getElementById('register-username').value.trim();
+            const email = document.getElementById('register-email').value.trim();
+            const password = document.getElementById('register-password').value.trim();
+            const confirmPassword = document.getElementById('register-confirm-password').value.trim();
+            
+            if (!username || !email || !password || !confirmPassword) {
+                if (currentLanguage === 'en') {
+                    showSuccessModal('Please fill in all fields', false);
+                } else {
+                    showSuccessModal('გთხოვთ შეავსოთ ყველა ველი', false);
+                }
+                return;
+            }
+            
+            if (password !== confirmPassword) {
+                if (currentLanguage === 'en') {
+                    showSuccessModal('Passwords do not match', false);
+                } else {
+                    showSuccessModal('პაროლები არ ემთხვევა', false);
+                }
+                return;
+            }
+            
+            // Simulate registration (in a real app, this would be an API call)
+            currentUser = {
+                username: username,
+                email: email
+            };
+            
+            // Save user to localStorage
+            saveToLocalStorage();
+            
+            // Update UI
+            updateAuthUI();
+            
+            // Close modal and show success
+            closeLoginModal();
+            if (currentLanguage === 'en') {
+                showSuccessModal('Registration successful! Welcome to sachivrebi.ge.', true);
+            } else {
+                showSuccessModal('რეგისტრაცია წარმატებულია! კეთილი იყოს თქვენი მობრძანება sachivrebi.ge-ზე.', true);
+            }
+            
+            // Update post type if needed
+            if (!isPostingAnonymous) {
+                setPostType(false);
+            }
+        }
+        
+        function logoutUser() {
+            currentUser = null;
+            saveToLocalStorage();
+            updateAuthUI();
+            if (currentLanguage === 'en') {
+                showSuccessModal('You have been logged out successfully.', true);
+            } else {
+                showSuccessModal('თქვენ წარმატებით გახვედით სისტემიდან.', true);
+            }
+            
+            // Reset post type to anonymous if user was posting publicly
+            if (!isPostingAnonymous) {
+                setPostType(true);
+            }
+        }
+        
+        function updateAuthUI() {
+            const authButtons = document.getElementById('auth-buttons');
+            const userProfile = document.getElementById('user-profile');
+            const authButtonsMobile = document.getElementById('auth-buttons-mobile');
+            const userProfileMobile = document.getElementById('user-profile-mobile');
+            const usernameDisplay = document.getElementById('username-display');
+            const usernameDisplayMobile = document.getElementById('username-display-mobile');
+            
+            if (currentUser) {
+                // User is logged in
+                authButtons.classList.add('hidden');
+                userProfile.classList.remove('hidden');
+                authButtonsMobile.classList.add('hidden');
+                userProfileMobile.classList.remove('hidden');
+                
+                usernameDisplay.textContent = currentUser.username;
+                usernameDisplayMobile.textContent = currentUser.username;
+            } else {
+                // User is not logged in
+                authButtons.classList.remove('hidden');
+                userProfile.classList.add('hidden');
+                authButtonsMobile.classList.remove('hidden');
+                userProfileMobile.classList.add('hidden');
+            }
+        }
+        
+        // Success modal
+        function showSuccessModal(message, isSuccess) {
+            const modal = document.getElementById('success-modal');
+            const title = document.getElementById('success-title');
+            const messageEl = document.getElementById('success-message');
+            
+            if (isSuccess) {
+                if (currentLanguage === 'en') {
+                    title.textContent = 'Success!';
+                } else {
+                    title.textContent = 'წარმატებულია!';
+                }
+                title.classList.remove('text-red-500');
+                title.classList.add('gradient-text');
+            } else {
+                if (currentLanguage === 'en') {
+                    title.textContent = 'Error';
+                } else {
+                    title.textContent = 'შეცდომა';
+                }
+                title.classList.remove('gradient-text');
+                title.classList.add('text-red-500');
+            }
+            
+            messageEl.textContent = message;
+            modal.classList.remove('hidden');
+        }
+        
+        function closeSuccessModal() {
+            document.getElementById('success-modal').classList.add('hidden');
+        }
+        
+        // Mobile menu
+        function openMobileMenu() {
+            document.getElementById('mobile-menu').classList.add('open');
+        }
+        
+        function closeMobileMenu() {
+            document.getElementById('mobile-menu').classList.remove('open');
+        }
+        
+        // Utility functions
+        function updateOnlineCount() {
+            // Simulate fluctuating online count
+            const change = Math.floor(Math.random() * 21) - 10; // -10 to +10
+            onlineCount = Math.max(100, onlineCount + change);
+            
+            document.getElementById('online-count').textContent = onlineCount;
+            document.getElementById('forum-online-count').textContent = onlineCount;
+            document.getElementById('chat-online-count').textContent = Math.floor(onlineCount * 0.3); // ~30% of online users in chat
+        }
+        
+        function getCurrentTime() {
+            const now = new Date();
+            let hours = now.getHours();
+            const minutes = now.getMinutes().toString().padStart(2, '0');
+            
+            return `${hours}:${minutes}`;
+        }
+    </script>
+</body>
+</html>
